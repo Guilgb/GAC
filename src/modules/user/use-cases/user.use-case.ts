@@ -59,8 +59,13 @@ export class UserUseCase {
     return this.firestoreService.allCourse();
   }
 
-  async createActivities(userId: string, activities: ActivitiesDTO) {
-    return this.firestoreService.createActivities(userId, activities);
+  async createActivities(userId: string, activities: ActivitiesDTO, file: any) {
+    try {
+      return this.firestoreService.createActivities(userId, activities, file);
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
   }
 
   async removeActivities(userId: string, activitiesId: string) {

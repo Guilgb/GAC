@@ -231,13 +231,41 @@ export class FirestoreService {
     return allCourses;
   }
 
-  async createActivities(userId: string, activities: ActivitiesDTO) {
+  async createActivities(userId: string, activities: ActivitiesDTO, file: any) {
     try {
       const userRef = this.collenction.doc(userId);
 
+      if (!file) {
+        throw new Error('File not found');
+      }
+
+      const bucket = admin.storage().bucket();
+      const fileUpload = bucket.file(file.originalname);
+
+      const blobStream = fileUpload.createWriteStream({
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+
+      const fileUrl = await new Promise((resolve, reject) => {
+        blobStream.on('error', (err) => {
+          reject(err);
+        });
+        let publicUrl = '';
+        blobStream.on('finish', async () => {
+          publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
+          resolve({ fileUrl: publicUrl });
+        });
+
+        blobStream.end(file.buffer);
+        return { fileUrl: publicUrl };
+      });
+
+      activities.file = (fileUrl as { fileUrl: string }).fileUrl;
+
       const activitiesCollection =
         await this.activitieService.createActivitie(activities);
-
       await userRef
         .update({
           activities:

@@ -97,16 +97,15 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  // @UseInterceptors(FileInterceptor('file'))
   @Post('/:id/activities')
+  @UseInterceptors(FileInterceptor('file'))
   async createActivities(
     @Param() params: { id: string },
     @Body() activities: ActivitiesDTO,
-    // @UploadedFile() file: Express.Multer.File,
+    @UploadedFile('file') file: Express.Multer.File,
   ) {
     const { id } = params;
-    // activities.file = file;
-    return this.userUseCase.createActivities(id, activities);
+    return this.userUseCase.createActivities(id, activities, file);
   }
 
   @UseGuards(AuthGuard)

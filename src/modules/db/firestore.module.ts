@@ -14,6 +14,7 @@ import { ActivitieService } from '../activities/activities.service';
           admin.initializeApp({
             credential: admin.credential.cert(firebaseConfig),
             databaseURL: process.env.FIREBASE_DATABASE_URL,
+            storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
           });
         }
         return admin;
@@ -29,5 +30,3 @@ import { ActivitieService } from '../activities/activities.service';
   exports: ['FIREBASE_ADMIN'],
 })
 export class FirebaseModule {}
-
-//Correção do erro de importação do módulo de atividades
