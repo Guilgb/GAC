@@ -11,7 +11,7 @@ import { ActivitieService } from 'src/modules/activities/activities.service';
 
 @Injectable()
 export class FirestoreService {
-  private collenction: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
+  private collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
   private storage: Storage;
 
   constructor(
@@ -20,8 +20,21 @@ export class FirestoreService {
     @Inject('ActivitieService')
     private readonly activitieService: ActivitieService,
   ) {
-    this.collenction = firestore().collection('user');
+    this.collection = firestore().collection('user');
     this.storage = new Storage();
+  }
+
+  async getUserInfo(email: string): Promise<UserDTO> {
+    try {
+      const userDoc = await this.collection.where('email', '==', email).get();
+      console.log(userDoc.docs[0].data());
+      if (!userDoc.docs[0].data()) {
+        throw new Error('Erro ao encontrar o usuário');
+      }
+      return userDoc.docs[0].data() as UserDTO;
+    } catch (error) {
+      throw new Error('Erro ao encontrar o usuário');
+    }
   }
 
   async createUser(createUser: UserDTO) {
@@ -42,19 +55,19 @@ export class FirestoreService {
     const user: Omit<UserDTO, 'id'> = {
       ...userC,
     };
-    return this.collenction.add(user).then((doc) => {
+    return this.collection.add(user).then((doc) => {
       return { id: doc.id, ...user };
     });
   }
 
   async findAllUsers() {
-    const users = await this.collenction.get();
+    const users = await this.collection.get();
     return users.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
   async findOneUser(id: string): Promise<UserReponse> {
     try {
-      const user = await this.collenction.doc(id).get();
+      const user = await this.collection.doc(id).get();
       const userResponse = user.data();
       return {
         activities: userResponse.activities,
@@ -76,7 +89,7 @@ export class FirestoreService {
 
   async removeUser(id: string) {
     try {
-      const userDelete = await this.collenction.doc(id).delete();
+      const userDelete = await this.collection.doc(id).delete();
       return userDelete;
     } catch (error) {
       throw new Error('Erro ao remover o usuário');
@@ -85,7 +98,7 @@ export class FirestoreService {
 
   async updateUser(id: string, updateUser: UpdateData<UserDTO>) {
     try {
-      await this.collenction.doc(id).update(updateUser);
+      await this.collection.doc(id).update(updateUser);
     } catch (error) {
       throw new Error('Erro ao atualizar o usuário');
     }
@@ -93,7 +106,7 @@ export class FirestoreService {
 
   async createCourse(userId: string, study: CourseDTO) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const courseId = firestore().collection('course').doc().id;
 
       const courseWithId: CourseDTO = { id: courseId, ...study };
@@ -124,7 +137,7 @@ export class FirestoreService {
 
   async removeCourse(userId: string, courseId: string) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
 
       const userDoc = await userRef.get();
 
@@ -154,7 +167,7 @@ export class FirestoreService {
 
   async updateCourse(userId: string, courseId: string, course: CourseDTO) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
@@ -185,7 +198,7 @@ export class FirestoreService {
   }
 
   async getAllCoursesForUser(userId: string) {
-    const userRef = this.collenction.doc(userId);
+    const userRef = this.collection.doc(userId);
     const userDoc = await userRef.get();
     if (!userDoc.exists) {
       throw new Error('User not found');
@@ -196,7 +209,7 @@ export class FirestoreService {
 
   async getCourseById(userId: string, courseId: string) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
@@ -219,7 +232,7 @@ export class FirestoreService {
   }
 
   async allCourse(): Promise<CourseDTO[]> {
-    const usersSnapshot = await this.collenction.get();
+    const usersSnapshot = await this.collection.get();
     const allCourses: CourseDTO[] = [];
     usersSnapshot.forEach((userDoc) => {
       const user = userDoc.data() as UserDTO;
@@ -233,7 +246,7 @@ export class FirestoreService {
 
   async createActivities(userId: string, activities: ActivitiesDTO, file: any) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
 
       if (!file) {
         throw new Error('File not found');
@@ -292,7 +305,7 @@ export class FirestoreService {
 
   async removeActivities(userId: string, activitiesId: string) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
 
       const userDoc = await userRef.get();
 
@@ -331,7 +344,7 @@ export class FirestoreService {
     activities: ActivitiesDTO,
   ) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
@@ -377,7 +390,7 @@ export class FirestoreService {
 
   async getAllActivitiesForUser(userId: string) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
@@ -395,7 +408,7 @@ export class FirestoreService {
 
   async getActivityById(userId: string, activitiesId: string) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
@@ -425,7 +438,7 @@ export class FirestoreService {
     categoryId: string,
   ) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
@@ -479,7 +492,7 @@ export class FirestoreService {
     categoryId: string,
   ) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {
@@ -535,7 +548,7 @@ export class FirestoreService {
 
   async listCategoriesForActivity(userId: string, activitiesId: string) {
     try {
-      const userRef = this.collenction.doc(userId);
+      const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
       if (!userDoc.exists) {

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -20,6 +21,20 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('/user')
 export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
+
+  @UseGuards(AuthGuard)
+  @Get('/info')
+  async getUserInfo(@Req() req) {
+    const user = req.user;
+    const userInfo = await this.userUseCase.getUserInfo(user.email);
+    return {
+      name: userInfo.name,
+      email: userInfo.email,
+      isAdmin: userInfo.isAdmin,
+      registration: userInfo.registration,
+      permissions: userInfo.permissions,
+    };
+  }
 
   @Post()
   async createUser(@Body() createUser: UserDTO) {

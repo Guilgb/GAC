@@ -14,10 +14,12 @@ export class UserUseCase {
 
   async createUser(createUser: UserDTO) {
     await YupValidator.validate(ValidateSchema, createUser);
-
     return this.firestoreService.createUser(createUser);
   }
 
+  async getUserInfo(email: string) {
+    return this.firestoreService.getUserInfo(email);
+  }
   async findAllUsers() {
     return this.firestoreService.findAllUsers();
   }
