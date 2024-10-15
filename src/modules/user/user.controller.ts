@@ -23,6 +23,12 @@ export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
 
   @UseGuards(AuthGuard)
+  @Get('/allCourses')
+  async getAllCourses() {
+    return this.userUseCase.allCourses();
+  }
+
+  @UseGuards(AuthGuard)
   @Get('/info')
   async getUserInfo(@Req() req) {
     const user = req.user;
@@ -46,12 +52,7 @@ export class UserController {
   async findAll() {
     return this.userUseCase.findAllUsers();
   }
-  @UseGuards(AuthGuard)
-  @Get('/:id')
-  async finOne(@Param() params: { id: string }) {
-    const { id } = params;
-    return this.userUseCase.findOneUser(id);
-  }
+
   @UseGuards(AuthGuard)
   @Delete('/:id')
   async remove(@Param() params: { id: string }) {
@@ -103,12 +104,6 @@ export class UserController {
   async getStudyById(@Param() params: { id: string; courseId: string }) {
     const { id, courseId } = params;
     return this.userUseCase.getCourseById(id, courseId);
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('/allCourses')
-  async getAllCourses() {
-    return this.userUseCase.allCourses();
   }
 
   @UseGuards(AuthGuard)
@@ -181,5 +176,12 @@ export class UserController {
   async listCategories(@Param() params: { id: string; activitiesId: string }) {
     const { id, activitiesId } = params;
     return this.userUseCase.listCategories(id, activitiesId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/:id')
+  async finOne(@Param() params: { id: string }) {
+    const { id } = params;
+    return this.userUseCase.findOneUser(id);
   }
 }
