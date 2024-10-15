@@ -342,14 +342,44 @@ export class FirestoreService {
     userId: string,
     activitiesId: string,
     activities: ActivitiesDTO,
+    file: any,
   ) {
     try {
       const userRef = this.collection.doc(userId);
       const userDoc = await userRef.get();
 
+      if (!file) {
+        throw new Error('File not found');
+      }
+
       if (!userDoc.exists) {
         throw new Error('User not found');
       }
+
+      const bucket = admin.storage().bucket();
+      const fileUpload = bucket.file(file.originalname);
+
+      const blobStream = fileUpload.createWriteStream({
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+
+      const fileUrl = await new Promise((resolve, reject) => {
+        blobStream.on('error', (err) => {
+          reject(err);
+        });
+        let publicUrl = '';
+        blobStream.on('finish', async () => {
+          publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
+          resolve({ fileUrl: publicUrl });
+        });
+
+        blobStream.end(file.buffer);
+        return { fileUrl: publicUrl };
+      });
+
+      activities.file = (fileUrl as { fileUrl: string }).fileUrl;
 
       const user = userDoc.data() as UserDTO;
       const activitiesToUpdate = user.activities.find(

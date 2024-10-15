@@ -78,11 +78,13 @@ export class UserUseCase {
     userId: string,
     activitiesId: string,
     activities: ActivitiesDTO,
+    file: any,
   ) {
     return this.firestoreService.updateActivities(
       userId,
       activitiesId,
       activities,
+      file,
     );
   }
 
