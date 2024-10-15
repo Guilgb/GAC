@@ -27,6 +27,17 @@ export interface UserReponse {
   courses: Array<Course>;
 }
 
+export interface UserReponses {
+  id: string;
+  email: string;
+  isAdmin: boolean;
+  activities: any[];
+  permissions: string[];
+  name: string;
+  registration: string;
+  courses: Array<Course>;
+}
+
 export const ValidateSchema = yup.object().shape({
   name: yup.string().required(),
   email: yup.string().email().required(),

@@ -2,7 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { firestore } from 'firebase-admin';
 import * as admin from 'firebase-admin';
-import { UserDTO, UserReponse } from '../../user/use-cases/dto/user.dto';
+import {
+  UserDTO,
+  UserReponse,
+  UserReponses,
+} from '../../user/use-cases/dto/user.dto';
 import { UpdateData } from '@google-cloud/firestore';
 import { Storage } from '@google-cloud/storage';
 import { CourseDTO } from '../../user/use-cases/dto/course.dto';
@@ -24,14 +28,24 @@ export class FirestoreService {
     this.storage = new Storage();
   }
 
-  async getUserInfo(email: string): Promise<UserDTO> {
+  async getUserInfo(email: string): Promise<UserReponses> {
     try {
       const userDoc = await this.collection.where('email', '==', email).get();
-      console.log(userDoc.docs[0].data());
       if (!userDoc.docs[0].data()) {
         throw new Error('Erro ao encontrar o usuário');
       }
-      return userDoc.docs[0].data() as UserDTO;
+      const id = userDoc.docs[0].id;
+      const data = userDoc.docs[0].data();
+      return {
+        id: id,
+        email: data.email,
+        isAdmin: data.isAdmin,
+        activities: data.activities,
+        permissions: data.permissions,
+        name: data.name,
+        registration: data.registration,
+        courses: data.courses,
+      };
     } catch (error) {
       throw new Error('Erro ao encontrar o usuário');
     }

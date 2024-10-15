@@ -34,6 +34,7 @@ export class UserController {
     const user = req.user;
     const userInfo = await this.userUseCase.getUserInfo(user.email);
     return {
+      id: userInfo.id,
       name: userInfo.name,
       email: userInfo.email,
       isAdmin: userInfo.isAdmin,
