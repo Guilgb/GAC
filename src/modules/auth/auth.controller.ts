@@ -16,7 +16,7 @@ export class AuthController {
       );
       return { token };
     } catch (error) {
-      throw new UnauthorizedException('Erro ao fazer login: ' + error.message);
+      throw new UnauthorizedException('Erro ao fazer login: ').message;
     }
   }
 }

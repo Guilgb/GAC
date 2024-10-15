@@ -65,7 +65,6 @@ export class UserUseCase {
     try {
       return this.firestoreService.createActivities(userId, activities, file);
     } catch (error) {
-      console.log(error);
       throw new Error(error);
     }
   }

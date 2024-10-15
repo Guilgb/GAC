@@ -10,7 +10,7 @@ export class AuthService {
     try {
       return await this.firebaseService.auth.verifyIdToken(token);
     } catch (error) {
-      throw new Error('Invalid token');
+      throw new Error('Invalid token').message;
     }
   }
 }

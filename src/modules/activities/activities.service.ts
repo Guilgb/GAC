@@ -23,7 +23,7 @@ export class ActivitieService {
         return { id: doc.id, ...activitieRef };
       });
     } catch (error) {
-      throw new Error(error);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -41,7 +41,7 @@ export class ActivitieService {
           return { id, ...activitieRef };
         });
     } catch (error) {
-      throw new Error(error);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -55,7 +55,7 @@ export class ActivitieService {
 
       return { id: activitie.id, ...activitie.data() };
     } catch (error) {
-      throw new Error(error);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -63,7 +63,7 @@ export class ActivitieService {
     try {
       return this.collection.doc(id).delete();
     } catch (error) {
-      throw new Error(error);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -74,7 +74,7 @@ export class ActivitieService {
         ...doc.data(),
       }));
     } catch (error) {
-      throw new Error(error);
+      throw new Error((error as Error).message);
     }
   }
 }

@@ -17,12 +17,13 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const authorization = request.headers.authorization;
     if (!authorization) {
-      throw new UnauthorizedException('Authorization header is missing');
+      throw new UnauthorizedException('Authorization header is missing')
+        .message;
     }
 
     const token = authorization.split('Bearer ')[1];
     if (!token) {
-      throw new UnauthorizedException('Token is missing');
+      throw new UnauthorizedException('Token is missing').message;
     }
 
     try {
@@ -30,7 +31,7 @@ export class AuthGuard implements CanActivate {
       request.user = decodedToken;
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Invalid token: ' + error.message);
+      throw new UnauthorizedException('Invalid token: ').message;
     }
   }
 }

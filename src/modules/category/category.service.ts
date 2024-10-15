@@ -28,7 +28,7 @@ export class ComplementaryCategoryService {
         return { id: doc.id, ...categoryRef };
       });
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error).message;
     }
   }
 
@@ -39,7 +39,7 @@ export class ComplementaryCategoryService {
         ...doc.data(),
       }));
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error).message;
     }
   }
 
@@ -51,7 +51,7 @@ export class ComplementaryCategoryService {
       }
       return { id: category.id, ...category.data() };
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error).message;
     }
   }
 
@@ -67,7 +67,7 @@ export class ComplementaryCategoryService {
           return { id, ...categoryRef };
         });
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error).message;
     }
   }
 
@@ -75,7 +75,7 @@ export class ComplementaryCategoryService {
     try {
       return this.collection.doc(id).delete();
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error).message;
     }
   }
 }

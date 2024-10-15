@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ActivitieService } from '../activities.service';
 import { ActivitieDTO, ActivitieSchema } from './dto/activities.dto';
-import { YupValidator } from 'src/shared/validators/yup.validator';
+import { YupValidator } from '../../../shared/validators/yup.validator';
 
 @Injectable()
 export class ActivitiesUseCase {
@@ -12,7 +12,7 @@ export class ActivitiesUseCase {
       await YupValidator.validate(ActivitieSchema, activitie);
       return this.service.createActivitie(activitie);
     } catch (error) {
-      throw new Error(error);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -25,7 +25,7 @@ export class ActivitiesUseCase {
       await YupValidator.validate(ActivitieSchema, activitie);
       return this.service.updateActivitie(id, activitie);
     } catch (error) {
-      throw new Error(error);
+      throw new Error((error as Error).message);
     }
   }
 
