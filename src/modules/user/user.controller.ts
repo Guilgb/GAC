@@ -137,6 +137,7 @@ export class UserController {
     @UploadedFile('file') file: Express.Multer.File,
   ) {
     const { id, activitiesId } = params;
+    console.log(file);
     return this.userUseCase.updateActivities(
       id,
       activitiesId,
