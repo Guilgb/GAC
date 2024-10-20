@@ -134,10 +134,10 @@ export class UserController {
   async updateActivities(
     @Param() params: { id: string; activitiesId: string },
     @Body() activities: ActivitiesDTO,
-    @UploadedFile('file') file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     const { id, activitiesId } = params;
-    console.log(file);
+
     return this.userUseCase.updateActivities(
       id,
       activitiesId,
