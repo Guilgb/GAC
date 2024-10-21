@@ -308,8 +308,8 @@ export class FirestoreService {
           });
         });
       const updatedUserDoc = await userRef.get();
-      const updatedUser = updatedUserDoc.data() as UserDTO;
-      return { id: updatedUserDoc.id, ...updatedUser };
+      (await updatedUserDoc.data()) as UserDTO;
+      return { id: updatedUserDoc.id, ...activities };
     } catch (error) {
       throw new Error(
         `Erro ao criar estudo para o usuário ${userId}: ${error}`,

@@ -18,9 +18,8 @@ export class ActivitieService {
         ...activitie,
         startDate: new Date(activitie.startDate),
       };
-
       return this.collection.add(activitieRef).then((doc) => {
-        return { id: doc.id, ...activitieRef };
+        return { id: doc.id, ...activitie };
       });
     } catch (error) {
       throw new Error((error as Error).message);
