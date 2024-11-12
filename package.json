@@ -2,18 +2,19 @@
   "name": "gac-back",
   "version": "0.0.1",
   "description": "",
+  "engines":{
+    "node": "20.x"
+  },
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && node --max-old-space-size=4096 seu_script.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "nest start --watch 77 ",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "deploy:dev": "vercel .",
-    "deploy:prod": "vercel --prod",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
