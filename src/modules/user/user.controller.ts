@@ -22,7 +22,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UserController {
   constructor(private readonly userUseCase: UserUseCase) {}
 
-  @UseGuards(AuthGuard)
   @Get('/allCourses')
   async getAllCourses() {
     return this.userUseCase.allCourses();
