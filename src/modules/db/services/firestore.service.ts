@@ -274,19 +274,23 @@ export class FirestoreService {
           contentType: file.mimetype,
         },
       });
-
       const fileUrl = await new Promise((resolve, reject) => {
         blobStream.on('error', (err) => {
           reject(err);
         });
-        let publicUrl = '';
         blobStream.on('finish', async () => {
-          publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
-          resolve({ fileUrl: publicUrl });
+          try {
+            const [url] = await fileUpload.getSignedUrl({
+              action: 'read',
+              expires: '03-01-2500',
+            });
+            resolve({ fileUrl: url });
+          } catch (error) {
+            reject(error);
+          }
         });
 
         blobStream.end(file.buffer);
-        return { fileUrl: publicUrl };
       });
 
       activities.file = (fileUrl as { fileUrl: string }).fileUrl;
@@ -332,7 +336,6 @@ export class FirestoreService {
       const ActivityToRemove = user.activities.find(
         (activities) => activities.id === activitiesId,
       );
-
       if (!ActivityToRemove) {
         throw new Error('Activity not found');
       }
@@ -380,13 +383,20 @@ export class FirestoreService {
           blobStream.on('error', (err) => {
             reject(err);
           });
-          let publicUrl = '';
           blobStream.on('finish', async () => {
-            publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
-            resolve({ fileUrl: publicUrl });
+            try {
+              const [url] = await fileUpload.getSignedUrl({
+                action: 'read',
+                expires: '03-01-2500',
+              });
+              resolve({ fileUrl: url });
+              console.log(url);
+            } catch (error) {
+              reject(error);
+            }
           });
+
           blobStream.end(file.buffer);
-          return { fileUrl: publicUrl };
         });
 
         activities.file = (fileUrl as { fileUrl: string }).fileUrl;

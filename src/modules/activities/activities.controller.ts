@@ -29,7 +29,7 @@ export class ActivitiesController {
     }
     const bucket = admin.storage().bucket();
     const fileUpload = bucket.file(file.originalname);
-
+    console.log(file);
     const blobStream = fileUpload.createWriteStream({
       metadata: {
         contentType: file.mimetype,
@@ -40,10 +40,17 @@ export class ActivitiesController {
       blobStream.on('error', (err) => {
         reject(err);
       });
-
       blobStream.on('finish', async () => {
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
-        resolve({ fileUrl: publicUrl });
+        try {
+          const [url] = await fileUpload.getSignedUrl({
+            action: 'read',
+            expires: '03-01-2500',
+          });
+          resolve({ fileUrl: url });
+          console.log(url);
+        } catch (error) {
+          reject(error);
+        }
       });
 
       blobStream.end(file.buffer);
