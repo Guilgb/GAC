@@ -87,6 +87,18 @@ export class UserUseCase {
     );
   }
 
+  async addCommentToActivities(
+    userId: string,
+    activitiesId: string,
+    comment: string,
+  ) {
+    return this.firestoreService.addCommentToActivities(
+      userId,
+      activitiesId,
+      comment,
+    );
+  }
+
   async getAllActivitiesForUser(userId: string) {
     return this.firestoreService.getAllActivitiesForUser(userId);
   }

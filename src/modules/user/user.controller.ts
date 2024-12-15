@@ -146,6 +146,20 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @Put('/:id/activities/:activitiesId/comment')
+  async addCommentToActivities(
+    @Param() params: { id: string; activitiesId: string },
+    @Body() comment: { text: string },
+  ) {
+    const { id, activitiesId } = params;
+    return this.userUseCase.addCommentToActivities(
+      id,
+      activitiesId,
+      comment.text,
+    );
+  }
+
+  @UseGuards(AuthGuard)
   @Get('/:id/activities')
   async getAllActivitiesForUser(@Param() params: { id: string }) {
     const { id } = params;

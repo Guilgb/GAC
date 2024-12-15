@@ -439,6 +439,60 @@ export class FirestoreService {
     }
   }
 
+  async addCommentToActivities(
+    userId: string,
+    activitiesId: string,
+    comment: string,
+  ) {
+    try {
+      const userRef = this.collection.doc(userId);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        throw new Error('User not found');
+      }
+
+      const user = userDoc.data() as UserDTO;
+      const activitiesToUpdate = user.activities.find(
+        (activities) => activities.id === activitiesId,
+      );
+
+      if (!activitiesToUpdate) {
+        throw new Error('Activity not found');
+      }
+      if (!activitiesToUpdate.comments) {
+        activitiesToUpdate.comments = [];
+      }
+      activitiesToUpdate.comments.push(comment);
+      // console.log(activitiesToUpdate);
+
+      await Promise.all([
+        userRef.update({
+          activities:
+            admin.firestore.FieldValue.arrayRemove(activitiesToUpdate),
+        }),
+        userRef.update({
+          activities: admin.firestore.FieldValue.arrayUnion(activitiesId),
+        }),
+
+        this.activitieService.updateActivitie(activitiesId, {
+          ...activitiesToUpdate,
+          approval: activitiesToUpdate.approval ? 'true' : 'false',
+          workload: Number(activitiesToUpdate.workload),
+        }),
+      ]);
+
+      const updatedUserDoc = await userRef.get();
+      const updatedUser = updatedUserDoc.data() as UserDTO;
+
+      return { id: updatedUserDoc.id, ...updatedUser };
+    } catch (error) {
+      throw new Error(
+        `Erro ao atualizar atividade do usuário ${userId}: ${error}`,
+      );
+    }
+  }
+
   async getAllActivitiesForUser(userId: string) {
     try {
       const userRef = this.collection.doc(userId);
