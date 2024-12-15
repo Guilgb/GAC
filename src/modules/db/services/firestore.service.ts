@@ -337,7 +337,7 @@ export class FirestoreService {
         (activities) => activities.id === activitiesId,
       );
       if (!ActivityToRemove) {
-        throw new Error('Activity not found');
+        throw new Error(`User don't have activities with id ${activitiesId}`);
       }
 
       await Promise.all([
@@ -453,6 +453,7 @@ export class FirestoreService {
       }
 
       const user = userDoc.data() as UserDTO;
+
       const activitiesToUpdate = user.activities.find(
         (activities) => activities.id === activitiesId,
       );
@@ -460,11 +461,18 @@ export class FirestoreService {
       if (!activitiesToUpdate) {
         throw new Error('Activity not found');
       }
-      if (!activitiesToUpdate.comments) {
-        activitiesToUpdate.comments = [];
+
+      const activitiesWithId: ActivitiesDTO = {
+        id: activitiesId,
+        ...activitiesToUpdate,
+        approval: activitiesToUpdate.approval ? 'true' : 'false',
+        workload: Number(activitiesToUpdate.workload),
+      };
+
+      if (!activitiesWithId.comments) {
+        activitiesWithId.comments = [];
       }
-      activitiesToUpdate.comments.push(comment);
-      // console.log(activitiesToUpdate);
+      activitiesWithId.comments.push(comment);
 
       await Promise.all([
         userRef.update({
@@ -472,13 +480,11 @@ export class FirestoreService {
             admin.firestore.FieldValue.arrayRemove(activitiesToUpdate),
         }),
         userRef.update({
-          activities: admin.firestore.FieldValue.arrayUnion(activitiesId),
+          activities: admin.firestore.FieldValue.arrayUnion(activitiesWithId),
         }),
 
         this.activitieService.updateActivitie(activitiesId, {
-          ...activitiesToUpdate,
-          approval: activitiesToUpdate.approval ? 'true' : 'false',
-          workload: Number(activitiesToUpdate.workload),
+          ...activitiesWithId,
         }),
       ]);
 
